@@ -1,23 +1,23 @@
 ## 課題
 1. サンプルアプリケーションを起動（デプロイ）する
     [サイトURL](https://59b42042a0494816a569e58f33718a0d.vfs.cloud9.ap-northeast-1.amazonaws.com/) ※ Google Chromeブラウザで開くこと
-    <img src="img/1-1.png" style="border: solid 1px black;">
-    <img src="img/1-2.png" style="border: solid 1px black;">
+    <img src="img/lec3/1-1.png" style="border: solid 1px black;">
+    <img src="img/lec3/1-2.png" style="border: solid 1px black;">
 1. APサーバーについて調べる
     1. APサーバーの名前とバージョンの確認
-        <img src="img/2-1.png" style="border: solid 1px black;">
+        <img src="img/lec3/2-1.png" style="border: solid 1px black;">
     1. APサーバーを終了させた場合に引き続きサイトにアクセスできるか確認
-        <img src="img/2-2.png" style="border: solid 1px black;">
-        <img src="img/2-3.png" style="border: solid 1px black;">
+        <img src="img/lec3/2-2.png" style="border: solid 1px black;">
+        <img src="img/lec3/2-3.png" style="border: solid 1px black;">
 1. DBサーバーについて調べる
     1. DBサーバー（DBエンジン）の名前の確認
-        <img src="img/3-1.png" style="border: solid 1px black;">
+        <img src="img/lec3/3-1.png" style="border: solid 1px black;">
     1. DBサーバーのバージョンの確認
-        <img src="img/3-2.png" style="border: solid 1px black;">
+        <img src="img/lec3/3-2.png" style="border: solid 1px black;">
     1. DBサーバーを終了させた場合に引き続きサイトにアクセスできるか確認
-        <img src="img/3-3.png" style="border: solid 1px black;">
+        <img src="img/lec3/3-3.png" style="border: solid 1px black;">
 1. Railsの構成管理ツールの名前とバージョンの確認
-    <img src="img/4-1.png" style="border: solid 1px black;">
+    <img src="img/lec3/4-1.png" style="border: solid 1px black;">
 
 ---
 
