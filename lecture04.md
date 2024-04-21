@@ -1,12 +1,12 @@
 ## 課題
-1. VPCの作成
+1. VPCの作成<br>
     ![](img/lec4/1-1.png)
-1. EC2の作成
+1. EC2の作成<br>
     ![](img/lec4/2-1.png)
-1. RDSの作成
+1. RDSの作成<br>
     ![](img/lec4/3-1.png)
     ![](img/lec4/3-2.png)
-1. EC2からRDSに接続
+1. EC2からRDSに接続<br>
     ![](img/lec4/4-1.png)
 
 ---
