@@ -18,7 +18,13 @@
     - ELB（ALB）のHTTPリスナー
     - S3バケット
 
-    ![](img/lec10/1-1.png)
+    CloudFormationの結果<br>
+    ![](img/lec10/1-1.png)<br>
+    EC2へSSH接続確認<br>
+    ![](img/lec10/1-2.png)<br>
+    EC2からRDSへ接続確認<br>
+    ![](img/lec10/1-3.png)<br>
+
 ---
 
 ## 学んだこと
