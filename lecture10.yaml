@@ -188,11 +188,46 @@ Resources:
         - Key: Name
           Value: !Sub ${NameBase}-sg-alb
 
+  # S3バケットの定義
+  S3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${NameBase}-20240421-s3
+
+  # EC2インスタンスのS3アクセスIAMロールの定義
+  EC2S3AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: EC2S3AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: !Sub "arn:aws:s3:::${S3}/*"
+
+  # IAMロールをEC2インスタンスに関連付け
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref EC2S3AccessRole
+
   # EC2インスタンスの定義
   EC2:
     Type: AWS::EC2::Instance
     Properties:
       SubnetId: !Ref PublicSubnet1a
+      IamInstanceProfile: !Ref InstanceProfile
       # Amazon Linux2
       ImageId: ami-05b37ce701f85f26a
       InstanceType: t2.micro
@@ -298,11 +333,5 @@ Resources:
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
-
-  # S3バケットの定義
-  S3:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub ${NameBase}-20240421-s3
 
 
