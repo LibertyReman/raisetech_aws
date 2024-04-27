@@ -196,7 +196,7 @@ Resources:
       # Amazon Linux2
       ImageId: ami-05b37ce701f85f26a
       InstanceType: t2.micro
-      KeyName: lecture10_aws_ec2_sshkey
+      KeyName: lecture10_aws_ec2_sshkey # 事前に作成しておくこと
       SecurityGroupIds:
         - !Ref SecurityGroupEC2
       Tags:
