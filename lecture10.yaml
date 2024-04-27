@@ -119,6 +119,7 @@ Resources:
   SecurityGroupEC2:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: !Sub ${NameBase}-sg-ec2
       GroupDescription: This Security Group is for EC2
       VpcId: !Ref VPC
       # インバウンドルールの設定
@@ -147,6 +148,7 @@ Resources:
   SecurityGroupRDS:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: !Sub ${NameBase}-sg-rds
       GroupDescription: This Security Group is for RDS
       VpcId: !Ref VPC
       # インバウンドルールの設定
@@ -166,6 +168,7 @@ Resources:
   SecurityGroupALB:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: !Sub ${NameBase}-sg-alb
       GroupDescription: This Security Group is for ALB
       VpcId: !Ref VPC
       # インバウンドルールの設定
@@ -250,6 +253,7 @@ Resources:
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
+      Name:  !Sub ${NameBase}-alb
       Type: application
       Scheme: internet-facing
       Subnets:
