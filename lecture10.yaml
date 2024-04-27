@@ -203,7 +203,19 @@ Resources:
         - Key: Name
           Value: !Sub ${NameBase}-ec2-1a
 
-  # RDSの定義
+  # RDSのシークレットマネージャーの定義
+  RDSSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: !Sub ${NameBase}-rds-secret
+      Description: "This SecretsManager is for RDS instance"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
+  # RDSインスタンスの定義
   RDS:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -211,8 +223,8 @@ Resources:
       DBInstanceClass: db.t3.micro
       Engine: mysql
       EngineVersion: 8.0.35
-      MasterUsername: admin
-      MasterUserPassword: adminpass
+      MasterUsername: !Sub "{{resolve:secretsmanager:${RDSSecret}:SecretString:username}}"
+      MasterUserPassword: !Sub "{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}"
       MultiAZ: False
       StorageType: gp2
       AllocatedStorage: 20
@@ -224,6 +236,14 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${NameBase}-rds
+
+  # RDSのシークレットマネージャーとRDSインスタンスの関連付け
+  RDSSecretTargetAttachment:
+    Type: "AWS::SecretsManager::SecretTargetAttachment"
+    Properties:
+      TargetType: AWS::RDS::DBInstance
+      TargetId: !Ref RDS
+      SecretId: !Ref RDSSecret
 
   # RDSのサブネットグループの定義
   RDSSubnetGroup:
