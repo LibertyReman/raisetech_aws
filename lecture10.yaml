@@ -134,7 +134,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: !Sub ${AllowedSSHIP}
+          CidrIp: !Ref AllowedSSHIP
       # アウトバウンドルールの設定
       SecurityGroupEgress:
         - IpProtocol: -1
