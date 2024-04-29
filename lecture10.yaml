@@ -189,10 +189,11 @@ Resources:
     Properties:
       BucketName: !Sub ${NameBase}-20240421-s3
 
-  # EC2インスタンスのS3アクセスIAMロールの定義
-  EC2S3AccessRole:
+  # IAMロールの定義
+  Role:
     Type: AWS::IAM::Role
     Properties:
+      RoleName:  !Sub ${NameBase}-role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -201,7 +202,7 @@ Resources:
               Service: ec2.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: EC2S3AccessPolicy
+        - PolicyName: S3AccessPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -209,13 +210,13 @@ Resources:
                 Action: s3:*
                 Resource: !Join ["/", [!GetAtt S3.Arn, "*"]]
 
-  # IAMロールをEC2インスタンスに関連付け
+  # IAMインスタンスプロファイルの定義
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
       Roles:
-        - !Ref EC2S3AccessRole
+        - !Ref Role
 
   # EC2インスタンスの定義
   EC2:
