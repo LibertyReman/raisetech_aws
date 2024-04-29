@@ -1,0 +1,333 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: lecture10 template
+
+
+# ----------------------------------------------------------------
+#   Parameters
+# ----------------------------------------------------------------
+Parameters:
+  NameBase:
+    Description: This is the base name.
+    Type: String
+    Default: lecture10
+  AllowedSSHIP:
+    Description: This is the IP address for SSH.
+    Type: String
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+
+# ----------------------------------------------------------------
+#   Resources
+# ----------------------------------------------------------------
+Resources:
+  # VPCの定義
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-vpc
+
+  # サブネットの定義
+  PublicSubnet1a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: ap-northeast-1a
+      # サブネット単位でiPv4パブリックアドレスの割り当てを有効化
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-public-subnet-1a
+
+  PublicSubnet1c:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: ap-northeast-1c
+      # サブネット単位でiPv4パブリックアドレスの割り当てを有効化
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-public-subnet-1c
+
+  PrivateSubnet1a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: ap-northeast-1a
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-private-subnet-1a
+
+  PrivateSubnet1c:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: ap-northeast-1c
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-private-subnet-1c
+
+  # インターネットゲートウェイの定義
+  IGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-igw
+
+  # VPCGatewayAttachmentの定義
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref IGW
+
+  # ルートテーブルの定義
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-route-table
+
+  # サブネットとルートテーブルの関連付け
+  SubnetRouteTableAssociation1a:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref PublicSubnet1a
+
+  SubnetRouteTableAssociation1c:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref PublicSubnet1c
+
+  # インターネットゲートウェイとルートテーブルの関連付け
+  Route:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+
+  # セキュリティグループの定義
+  SecurityGroupEC2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${NameBase}-sg-ec2
+      GroupDescription: This Security Group is for EC2
+      VpcId: !Ref VPC
+      # インバウンドルールの設定
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AllowedSSHIP
+      # アウトバウンドルールの設定
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-sg-ec2
+
+  SecurityGroupRDS:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${NameBase}-sg-rds
+      GroupDescription: This Security Group is for RDS
+      VpcId: !Ref VPC
+      # インバウンドルールの設定
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref SecurityGroupEC2
+      # アウトバウンドルールの設定
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-sg-rds
+
+  SecurityGroupALB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${NameBase}-sg-alb
+      GroupDescription: This Security Group is for ALB
+      VpcId: !Ref VPC
+      # インバウンドルールの設定
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      # アウトバウンドルールの設定
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-sg-alb
+
+  # S3バケットの定義
+  S3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${NameBase}-20240421-s3
+
+  # IAMロールの定義
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:  !Sub ${NameBase}-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: !Join ["/", [!GetAtt S3.Arn, "*"]]
+
+  # IAMインスタンスプロファイルの定義
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref Role
+
+  # EC2インスタンスの定義
+  EC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref PublicSubnet1a
+      IamInstanceProfile: !Ref InstanceProfile
+      # Amazon Linux2
+      ImageId: ami-05b37ce701f85f26a
+      InstanceType: t2.micro
+      KeyName: lecture10_aws_ec2_sshkey # 事前に作成しておくこと
+      SecurityGroupIds:
+        - !Ref SecurityGroupEC2
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-ec2-1a
+
+  # RDSのシークレットマネージャーの定義
+  RDSSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: !Sub ${NameBase}-rds-secret
+      Description: "This SecretsManager is for RDS instance"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
+  # RDSインスタンスの定義
+  RDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub ${NameBase}-rds
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      EngineVersion: 8.0.35
+      MasterUsername: !Sub "{{resolve:secretsmanager:${RDSSecret}:SecretString:username}}"
+      MasterUserPassword: !Sub "{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}"
+      MultiAZ: False
+      StorageType: gp2
+      AllocatedStorage: 20
+      PubliclyAccessible: false
+      Port: 3306
+      DBSubnetGroupName: !Ref RDSSubnetGroup
+      VPCSecurityGroups:
+        - !Ref SecurityGroupRDS
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-rds
+
+  # RDSのシークレットマネージャーとRDSインスタンスの関連付け
+  RDSSecretTargetAttachment:
+    Type: "AWS::SecretsManager::SecretTargetAttachment"
+    Properties:
+      TargetType: AWS::RDS::DBInstance
+      TargetId: !Ref RDS
+      SecretId: !Ref RDSSecret
+
+  # RDSのサブネットグループの定義
+  RDSSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: This DBSubnet Group is for RDS
+      SubnetIds:
+        - !Ref PrivateSubnet1a
+        - !Ref PrivateSubnet1c
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-rds-subnet-group
+
+  # ELB（ALB）のターゲットグループの定義
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${NameBase}-tg
+      Protocol: HTTP
+      Port: 80
+      VpcId: !Ref VPC
+      TargetType: instance
+      Targets:
+        - Id: !Ref EC2
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-tg
+
+  # ELB（ALB）の定義
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:  !Sub ${NameBase}-alb
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - !Ref PublicSubnet1a
+        - !Ref PublicSubnet1c
+      SecurityGroups:
+        - !Ref SecurityGroupALB
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-alb
+
+  # ELB（ALB）のHTTPリスナーの定義
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ALB
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+
