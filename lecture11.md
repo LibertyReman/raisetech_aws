@@ -147,7 +147,7 @@ root@9e17cba23249:/work/serverspec# rake spec
 ## 学んだこと
 
 - ServerspecとはRubyで作られたインフラの自動テストを行うツール
-- Serverspecは外部から実行しテスト自体はテスト対象のサーバー上で実行される
+- Serverspecは一般的に外部から実行しテスト自体はテスト対象のサーバー上で実行される
 - テスト対象のサーバー上にはRubyの実行環境が必要
 
 ## 感想
