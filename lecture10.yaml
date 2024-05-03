@@ -34,7 +34,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: 10.0.1.0/24
-      AvailabilityZone: ap-northeast-1a
+      AvailabilityZone: !Sub "${AWS::Region}a"
       # サブネット単位でiPv4パブリックアドレスの割り当てを有効化
       MapPublicIpOnLaunch: true
       Tags:
@@ -46,7 +46,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: 10.0.2.0/24
-      AvailabilityZone: ap-northeast-1c
+      AvailabilityZone: !Sub "${AWS::Region}c"
       # サブネット単位でiPv4パブリックアドレスの割り当てを有効化
       MapPublicIpOnLaunch: true
       Tags:
@@ -58,7 +58,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: 10.0.3.0/24
-      AvailabilityZone: ap-northeast-1a
+      AvailabilityZone: !Sub "${AWS::Region}a"
       Tags:
         - Key: Name
           Value: !Sub ${NameBase}-private-subnet-1a
@@ -68,7 +68,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: 10.0.4.0/24
-      AvailabilityZone: ap-northeast-1c
+      AvailabilityZone: !Sub "${AWS::Region}c"
       Tags:
         - Key: Name
           Value: !Sub ${NameBase}-private-subnet-1c
