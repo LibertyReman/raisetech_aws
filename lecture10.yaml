@@ -11,7 +11,7 @@ Parameters:
     Type: String
     Default: lecture10
   AllowedSSHIP:
-    Description: This is the IP address for SSH.
+    Description: This is the IP address for SSH. (Ex 0.0.0.0/0)
     Type: String
     AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
 
@@ -226,7 +226,7 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       # Amazon Linux2
       ImageId: ami-05b37ce701f85f26a
-      InstanceType: t2.micro
+      InstanceType: t2.medium
       KeyName: lecture10_aws_ec2_sshkey # 事前に作成しておくこと
       SecurityGroupIds:
         - !Ref SecurityGroupEC2
