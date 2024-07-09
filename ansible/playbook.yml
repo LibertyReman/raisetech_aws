@@ -1,0 +1,13 @@
+---
+- hosts: all
+  roles:
+    - ruby
+    - bundler
+    - rails
+    - node
+    - yarn
+    - mysql
+    - nginx
+    - railsapp
+
+

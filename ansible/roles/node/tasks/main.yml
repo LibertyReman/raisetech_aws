@@ -1,0 +1,16 @@
+---
+# tasks file for node
+- name: Install nvm
+  shell: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+  args:
+    creates: "~/.nvm/nvm.sh" # nvmがインストール済みの場合はタスクをスキップ
+
+- name: Check if Node is installed
+  shell: bash -lc "node -v"
+  ignore_errors: yes # コマンドが失敗してもタスクを続行
+  register: check_node
+
+- name: Install specific Node version
+  shell: bash -lc ". ~/.nvm/nvm.sh && nvm install 17.9.1"
+  when: check_node.failed
+
