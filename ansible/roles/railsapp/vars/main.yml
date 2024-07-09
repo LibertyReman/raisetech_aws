@@ -1,8 +1,8 @@
 ---
 # vars file for railsapp
-colon: ':'
-rds_host: '{{ lookup("env", "RDS_HOST") }}'
-rds_username: '{{ lookup("env", "RDS_USERNAME") }}'
-rds_password: '{{ lookup("env", "RDS_PASSWORD") }}'
-s3_bucket_name: '{{ lookup("env", "S3_BUCKET_NAME") }}'
+colon: ":"
+rds_host: "{{ lookup('env', 'RDS_HOST') }}"
+rds_username: "{{ lookup('env', 'RDS_USERNAME') }}"
+rds_password: "{{ lookup('env', 'RDS_PASSWORD') }}"
+s3_bucket_name: "{{ lookup('env', 'S3_BUCKET_NAME') }}"
 
