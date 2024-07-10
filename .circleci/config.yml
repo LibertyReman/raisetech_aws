@@ -49,7 +49,7 @@ jobs:
             rds_password=$(aws secretsmanager get-secret-value --secret-id $rds_secrets_name --query SecretString --output text | jq -r '.password')
             echo "export RDS_HOST=$rds_host" >> /tmp/awsinfo
             echo "export RDS_USERNAME=$rds_username" >> /tmp/awsinfo
-            echo "export RDS_PASSWORD='$rds_password'" >> /tmp/awsinfo
+            echo "export RDS_PASSWORD=$rds_password" >> /tmp/awsinfo
       - run:
           name: Get S3 Bucket Name
           command: |

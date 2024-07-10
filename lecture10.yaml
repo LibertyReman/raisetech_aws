@@ -244,7 +244,7 @@ Resources:
         SecretStringTemplate: '{"username": "admin"}'
         GenerateStringKey: "password"
         PasswordLength: 16
-        ExcludeCharacters: '"@/\'
+        ExcludeCharacters: '"`~@/\><;|&'
 
   # RDSインスタンスの定義
   RDS:
