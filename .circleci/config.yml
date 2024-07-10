@@ -38,7 +38,7 @@ jobs:
       - run:
           name: Get EC2 Public IP
           command: |
-            ec2_public_ip=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].{Name:Tags[?Key==`Name`]|[0].Value, PublicIpAddress:PublicIpAddress}' --output text | grep << pipeline.parameters.stack-name >> | awk '{print $2}')
+            ec2_public_ip=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].{Name:Tags[?Key==`Name`]|[0].Value, PublicIpAddress:PublicIpAddress}' --output text | grep << pipeline.parameters.stack-name >> | grep -v None | awk '{print $2}')
             echo "export EC2_PUBLIC_IP=$ec2_public_ip" >> /tmp/awsinfo
       - run:
           name: Get RDS Credentials
