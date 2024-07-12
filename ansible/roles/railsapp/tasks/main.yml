@@ -31,9 +31,9 @@
   shell: |
     bash -lc "grep -e DB_USERNAME -e DB_PASSWORD -e DB_HOST ~/.bashrc || \
               echo -e '\\n# DB settings for Rails App\n\
-              export DB_HOST={{ rds_host }}\n\
-              export DB_USERNAME={{ rds_username }}\n\
-              export DB_PASSWORD={{ rds_password }}\n' >> ~/.bashrc;\
+              export DB_HOST='\''{{ rds_host }}'\''\n\
+              export DB_USERNAME='\''{{ rds_username }}'\''\n\
+              export DB_PASSWORD='\''{{ rds_password }}'\''\n' >> ~/.bashrc;\
               source ~/.bashrc"
 
 - name: Edit config/database.yml
@@ -47,7 +47,7 @@
   shell: |
     bash -lc "grep AWS_S3_BUCKET_NAME ~/.bashrc || \
               echo -e '\\n# S3 settings for Rails App\n\
-              export AWS_S3_BUCKET_NAME={{ s3_bucket_name }}\n' >> ~/.bashrc;\
+              export AWS_S3_BUCKET_NAME='\''{{ s3_bucket_name }}'\''\n' >> ~/.bashrc;\
               source ~/.bashrc"
 
 - name: Edit config/environments/development.rb for S3

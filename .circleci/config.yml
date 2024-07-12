@@ -39,7 +39,7 @@ jobs:
           name: Get EC2 Public IP
           command: |
             ec2_public_ip=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].{Name:Tags[?Key==`Name`]|[0].Value, PublicIpAddress:PublicIpAddress}' --output text | grep << pipeline.parameters.stack-name >> | grep -v None | awk '{print $2}')
-            echo "export EC2_PUBLIC_IP=$ec2_public_ip" >> /tmp/awsinfo
+            echo "export EC2_PUBLIC_IP='$ec2_public_ip'" >> /tmp/awsinfo
       - run:
           name: Get RDS Credentials
           command: |
@@ -47,14 +47,14 @@ jobs:
             rds_secrets_name=$(aws secretsmanager list-secrets --query 'SecretList[*].Name' --output text | xargs -n1 | grep << pipeline.parameters.stack-name >>)
             rds_username=$(aws secretsmanager get-secret-value --secret-id $rds_secrets_name --query SecretString --output text | jq -r '.username')
             rds_password=$(aws secretsmanager get-secret-value --secret-id $rds_secrets_name --query SecretString --output text | jq -r '.password')
-            echo "export RDS_HOST=$rds_host" >> /tmp/awsinfo
-            echo "export RDS_USERNAME=$rds_username" >> /tmp/awsinfo
-            echo "export RDS_PASSWORD=$rds_password" >> /tmp/awsinfo
+            echo "export RDS_HOST='$rds_host'" >> /tmp/awsinfo
+            echo "export RDS_USERNAME='$rds_username'" >> /tmp/awsinfo
+            echo "export RDS_PASSWORD='$rds_password'" >> /tmp/awsinfo
       - run:
           name: Get S3 Bucket Name
           command: |
             s3_bucket_name=$(aws s3api list-buckets --query "Buckets[].Name" --output text | xargs -n1 | grep << pipeline.parameters.stack-name >>)
-            echo "export S3_BUCKET_NAME=$s3_bucket_name" >> /tmp/awsinfo
+            echo "export S3_BUCKET_NAME='$s3_bucket_name'" >> /tmp/awsinfo
       - persist_to_workspace:
           root: /tmp
           paths: awsinfo
