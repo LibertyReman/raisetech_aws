@@ -4,7 +4,30 @@
 
 1. CircleCIのアカウント作成
 1. CircleCI上でプロジェクトを作成し、対象のGitHubリポジトリを登録
-1. [config.yml](.circleci/config.yml) の作成
+1. .circleci/config.yml の作成
+
+    ``` yaml
+    version: 2.1
+    orbs:
+      python: circleci/python@2.0.3
+    jobs:
+      cfn-lint:
+        executor: python/default
+        steps:
+          - checkout
+          - run: pip install cfn-lint
+          - run:
+              name: run cfn-lint
+              command: |
+                # CloudFormationテンプレートファイルの検証
+                cfn-lint -i W3002 -t lecture10.yaml
+
+    workflows:
+      raisetech:
+        jobs:
+          - cfn-lint
+    ```
+
 1. GitHubへPush
 
 ### 実行結果
