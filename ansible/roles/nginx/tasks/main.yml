@@ -1,0 +1,44 @@
+---
+# tasks file for nginx
+- name: Prepare to install nginx
+  become: yes
+  shell: "amazon-linux-extras enable nginx1"
+
+- name: Install nginx
+  become: yes
+  yum:
+    name: nginx
+    state: present
+
+- name: Edit nginx.conf
+  become: yes
+  shell: bash -lc "sed -i 's/user nginx/user ec2-user/' /etc/nginx/nginx.conf"
+
+- name: Create conf.d/rails.conf
+  become: yes
+  template:
+    src: roles/nginx/templates/rails.conf.j2
+    dest: /etc/nginx/conf.d/rails.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Edit conf.d/rails.conf
+  become: yes
+  shell: bash -lc "sed -i 's/0.0.0.0/{{ ansible_host }}/' /etc/nginx/conf.d/rails.conf"
+
+- name: Change /var/lib/nginx owner for S3
+  become: yes
+  file:
+    path: /var/lib/nginx
+    owner: "{{ ansible_user }}"
+    recurse: yes
+
+- name: Start nginx and enable it to start on boot
+  become: yes
+  service:
+    name: nginx
+    enabled: yes # サービス自動起動設定
+    state: started # サービス起動
+
+

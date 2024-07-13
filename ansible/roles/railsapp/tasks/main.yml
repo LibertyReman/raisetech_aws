@@ -1,0 +1,80 @@
+---
+# tasks file for railsapp
+- name: Install ImageMagick
+  become: yes
+  yum:
+    name: ImageMagick
+    state: present
+
+- name: Check if the raisetech-live8-sample-app repository exists
+  stat:
+    path: ~/raisetech-live8-sample-app
+  register: check_raisetech_live8_sample_app
+
+- name: SetUp raisetech-live8-sample-app repository
+  git:
+    repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
+    dest: ~/raisetech-live8-sample-app
+    version: b23f9b4 # Nginx + Unicorn Version
+  when: not check_raisetech_live8_sample_app.stat.exists
+
+- name: Check if config/database.yml exists
+  stat:
+    path: ~/raisetech-live8-sample-app/config/database.yml
+  register: check_databaseyml
+
+- name: Create config/database.yml
+  shell: bash -lc "cp ~/raisetech-live8-sample-app/config/database.yml.sample ~/raisetech-live8-sample-app/config/database.yml"
+  when: not check_databaseyml.stat.exists
+
+- name: Check the DB environment variables and set them if they don't exist
+  shell: |
+    bash -lc "grep -e DB_USERNAME -e DB_PASSWORD -e DB_HOST ~/.bashrc || \
+              echo -e '\\n# DB settings for Rails App\n\
+              export DB_HOST='\''{{ rds_host }}'\''\n\
+              export DB_USERNAME='\''{{ rds_username }}'\''\n\
+              export DB_PASSWORD='\''{{ rds_password }}'\''\n' >> ~/.bashrc;\
+              source ~/.bashrc"
+
+- name: Edit config/database.yml
+  shell: |
+    bash -lc "sed -i -e '0,/username{{colon}}.*/ s/username{{colon}}.*/username{{colon}} <%= ENV['\''DB_USERNAME'\''] %>/' \
+              -e '0,/password{{colon}}.*/ s/password{{colon}}.*/password{{colon}} \"<%= ENV['\''DB_PASSWORD'\''] %>\"\n  host{{colon}} <%= ENV['\''DB_HOST'\''] %>/' \
+              ~/raisetech-live8-sample-app/config/database.yml"
+  when: not check_databaseyml.stat.exists
+
+- name: Check the S3 environment variables and set them if they don't exist
+  shell: |
+    bash -lc "grep AWS_S3_BUCKET_NAME ~/.bashrc || \
+              echo -e '\\n# S3 settings for Rails App\n\
+              export AWS_S3_BUCKET_NAME='\''{{ s3_bucket_name }}'\''\n' >> ~/.bashrc;\
+              source ~/.bashrc"
+
+- name: Edit config/environments/development.rb for S3
+  shell: |
+    bash -lc "sed -i '/config\.active_storage\.service/ s/{{colon}}local/{{colon}}amazon/' ~/raisetech-live8-sample-app/config/environments/development.rb"
+
+- name: Edit config/environments/development.rb for ELB
+  shell: |
+    bash -lc "grep config.hosts.clear ~/raisetech-live8-sample-app/config/environments/development.rb || \
+              sed -i 's/^end$/\n  # Allow all hosts\n  config.hosts.clear\nend/g' ~/raisetech-live8-sample-app/config/environments/development.rb"
+
+- name: Execute bin/setup
+  shell: bash -lc "bin/setup"
+  args:
+    chdir: ~/raisetech-live8-sample-app/
+
+- name: Execute assets:precompile
+  shell: |
+    bash -lc "RAILS_ENV=development bundle exec rails assets:precompile"
+  args:
+    chdir: ~/raisetech-live8-sample-app/
+
+- name: Start Unicorn if it's not running
+  shell: |
+    bash -lc "ps -ef | grep unicorn | grep -v grep || \
+              bundle exec unicorn -c config/unicorn.rb -E development -D"
+  args:
+    chdir: ~/raisetech-live8-sample-app/
+
+

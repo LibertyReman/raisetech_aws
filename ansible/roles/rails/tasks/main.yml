@@ -1,0 +1,9 @@
+---
+# tasks file for rails
+- name: Install specific Rails version
+  gem:
+    name: rails
+    version: "7.0.4"
+    state: present
+    user_install: no
+

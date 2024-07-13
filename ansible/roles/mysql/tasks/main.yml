@@ -1,0 +1,12 @@
+---
+# tasks file for mysql
+- name: Check if MySQL is installed
+  shell: bash -lc "which mysql"
+  ignore_errors: yes # コマンドが失敗してもタスクを続行
+  register: check_mysql
+
+- name: Install MySQL
+  shell: curl -fsSL https://raw.githubusercontent.com/MasatoshiMizumoto/raisetech_documents/main/aws/scripts/mysql_amazon_linux_2.sh | sh
+  when: check_mysql.failed
+
+

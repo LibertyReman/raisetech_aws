@@ -1,0 +1,12 @@
+---
+# tasks file for yarn
+- name: Install yarn node.js package globally.
+  npm:
+    name: yarn
+    version: "1.22.19"
+    global: yes
+
+- name: Set yarn version
+  shell: bash -lc "yarn set version 1.22.19"
+
+
