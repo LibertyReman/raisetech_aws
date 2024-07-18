@@ -12,12 +12,18 @@
 |第7回|第5回で構築した環境の脆弱性とその対策|[lecture07.md](lecture07.md)|
 |第8回|課題なし<br>第5回課題のライブコーディング視聴-1|-|
 |第9回|課題なし<br>第5回課題のライブコーディング視聴-2|-|
-|第10回|第5回課題で構築した環境をCloudFormationで構築|[lecture10.md](lecture10.md)<br>[lecture10.yaml](lecture10.yaml)|
-|第11回|ServerSpecによるインフラの自動テスト|[lecture11.md](lecture11.md)<br>[lecture11_spec.rb](lecture11_spec.rb)|
+|第10回|第5回課題で構築した環境をCloudFormationで構築|[lecture10.md](lecture10.md)<br>- [lecture10.yaml](lecture10.yaml)|
+|第11回|Serverspecによるインフラの自動テスト|[lecture11.md](lecture11.md)<br>- [lecture11_spec.rb](lecture11_spec.rb)|
 |第12回|CI/CDツール CircleCIの使用|[lecture12.md](lecture12.md)|
-|第13回|||
-|第14回|||
-|第15回|||
-|第16回|||
+|第13回|CircleCIを用いたインフラの構築（CloudFormation）、Railsサンプルアプリのデプロイ（Ansible）、およびテスト（Serverspec）の一貫した自動化|[lecture13.md](lecture13.md)<br>- [CircleCI](.circleci/config.yml)<br>- [CloudFormation](lecture10.yaml)<br>- [Ansible](ansible/playbook.yml)<br>- [Serverspec](serverspec/spec/target/lecture13_spec.rb)|
+|第14回|課題なし<br>第13回課題のライブコーディング視聴-1|-|
+|第15回|課題なし<br>第13回課題のライブコーディング視聴-2|-|
+|第16回|課題なし<br>現場へ出ていくにあたって|[README.md](README.md)|
 
+## 最終課題の概要
+
+- CircleCIを用いてAWSのインフラ構築、Railsサンプルアプリのデプロイ、テストを一貫して自動化する仕組みを作成（詳細は[lecture13.md](lecture13.md) 参照）
+- [使用したRailsサンプルアプリ](https://github.com/yuta-ushijima/raisetech-live8-sample-app)
+- CircleCIで作成したもの
+    ![](img/lec13/3-1.png)
 
