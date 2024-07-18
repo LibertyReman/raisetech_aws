@@ -18,7 +18,7 @@
 |第13回|CircleCIを用いたインフラの構築（CloudFormation）、Railsサンプルアプリのデプロイ（Ansible）、およびテスト（Serverspec）の一貫した自動化|[lecture13.md](lecture13.md)<br>- [CircleCI](.circleci/config.yml)<br>- [CloudFormation](lecture10.yaml)<br>- [Ansible](ansible/playbook.yml)<br>- [Serverspec](serverspec/spec/target/lecture13_spec.rb)|
 |第14回|課題なし<br>第13回課題のライブコーディング視聴-1|-|
 |第15回|課題なし<br>第13回課題のライブコーディング視聴-2|-|
-|第16回|課題なし<br>現場へ出ていくにあたって|[README.md](README.md)|
+|第16回|課題なし<br>現場へ出ていくにあたって|-|
 
 ## 最終課題の概要
 
